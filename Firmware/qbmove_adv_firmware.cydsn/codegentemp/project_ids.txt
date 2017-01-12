@@ -1,0 +1,6 @@
+C:\Users\MattiaCP\Documents\GITHUB\ExoSense\Firmware\qbmove_adv_firmware.cydsn\qbmove_adv_firmware.cyprj|efa937a8-81c0-457f-9aff-512329041af8
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|49bfc57c-c090-454f-ba33-85fde681056f
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\default\CyReferenceLibrary\CyReferenceLibrary.cylib\CyReferenceLibrary.cyprj|3ce30117-18bf-4755-a0aa-f86e6bc4ee71
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|62d1b34b-27f3-48de-8c7d-b504423671b9
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|588d7fa9-da84-4ef7-8186-95fec0b28400
+C:\Program Files (x86)\Cypress\PSoC Creator\3.3\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|6d97cc29-141e-4d15-8bbd-5a94fe72e881
