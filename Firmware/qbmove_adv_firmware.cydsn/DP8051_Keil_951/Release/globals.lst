@@ -1,4 +1,4 @@
-C51 COMPILER V9.51   GLOBALS                                                               01/11/2017 18:17:24 PAGE 1   
+C51 COMPILER V9.51   GLOBALS                                                               03/22/2017 09:03:55 PAGE 1   
 
 
 C51 COMPILER V9.51, COMPILATION OF MODULE GLOBALS
@@ -11,58 +11,90 @@ line level    source
 
 *** MESSAGE C286 IN LINE 0 OF (null): license limits optimization to level 5
    1          // ----------------------------------------------------------------------------
-   2          // Copyright (C)  qbrobotics. All rights reserved.
-   3          // www.qbrobotics.com
-   4          // ----------------------------------------------------------------------------
-   5          
-   6          /**
-   7          * \file         globals.c
-   8          *
-   9          * \brief        Global variables.
-  10          * \date         May 13, 2016
-  11          * \author       qbrobotics
-  12          * \copyright    (C)  qbrobotics. All rights reserved.
-  13          */
-  14          
-  15          //=================================================================     includes
-  16          #include <globals.h>
+   2          // BSD 3-Clause License
+   3          
+   4          // Copyright (c) 2016, qbrobotics
+   5          // Copyright (c) 2017, Centro "E.Piaggio"
+   6          // All rights reserved.
+   7          
+   8          // Redistribution and use in source and binary forms, with or without
+   9          // modification, are permitted provided that the following conditions are met:
+  10          
+  11          // * Redistributions of source code must retain the above copyright notice, this
+  12          //   list of conditions and the following disclaimer.
+  13          
+  14          // * Redistributions in binary form must reproduce the above copyright notice,
+  15          //   this list of conditions and the following disclaimer in the documentation
+  16          //   and/or other materials provided with the distribution.
   17          
-  18          //=============================================      global variables definition
-  19          
-  20          
-  21          struct st_ref   g_ref, g_refNew, g_refOld;  // motor variables
-  22          struct st_meas  g_meas, g_measOld;          // measurements
-  23          struct st_data  g_rx;                       // income data
-  24          struct st_mem   g_mem, c_mem;               // memory
-  25          struct st_count g_count;                                // counters to debug commands sent
-  26          
-  27          // Timer value for debug field
-  28          
-  29          uint32 timer_value;
-  30          uint32 timer_value0;
-  31          
-  32          // Device Data
-  33          
-  34          int32   dev_tension;                // Power supply tension
-  35          uint8   dev_pwm_limit;
-  36          
-  37          uint8 calibration_flag;
-  38          
-  39          // Bit Flag
-  40          
-  41          CYBIT reset_last_value_flag;
-  42          CYBIT tension_valid;
-  43          CYBIT interrupt_flag;
-  44          CYBIT watchdog_flag;
-  45          
-  46          // DMA Buffer
+  18          // * Neither the name of the copyright holder nor the names of its
+  19          //   contributors may be used to endorse or promote products derived from
+  20          //   this software without specific prior written permission.
+  21          
+  22          // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  23          // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  24          // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  25          // DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  26          // FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  27          // DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  28          // SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  29          // CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  30          // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  31          // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  32          // POSSIBILITY OF SUCH DAMAGE.
+  33          // ----------------------------------------------------------------------------
+  34          
+  35          /**
+  36          * \file         globals.c
+  37          *
+  38          * \brief        Global variables.
+  39          * \date         May 13, 2016
+  40          * \author       qbrobotics
+  41          * \copyright    (C) 2012-2016 qbrobotics. All rights reserved.
+  42          * \copyright    (C) 2017 Centro "E.Piaggio". All rights reserved.
+  43          */
+  44          
+  45          //=================================================================     includes
+  46          #include <globals.h>
   47          
-  48          int16 ADC_buf[3]; 
+  48          //=============================================      global variables definition
   49          
-  50          // PWM sign value
-  51          
-  52          int8 pwm_sign[NUM_OF_MOTORS];
-C51 COMPILER V9.51   GLOBALS                                                               01/11/2017 18:17:24 PAGE 2   
+  50          
+  51          struct st_ref   g_ref, g_refNew, g_refOld;  // motor variables
+  52          struct st_meas  g_meas, g_measOld;          // measurements
+C51 COMPILER V9.51   GLOBALS                                                               03/22/2017 09:03:55 PAGE 2   
+
+  53          struct st_data  g_rx;                       // income data
+  54          struct st_mem   g_mem, c_mem;               // memory
+  55          struct st_count g_count;                                // counters to debug commands sent
+  56          
+  57          // Timer value for debug field
+  58          
+  59          uint32 timer_value;
+  60          uint32 timer_value0;
+  61          
+  62          // Device Data
+  63          
+  64          int32   dev_tension;                // Power supply tension
+  65          uint8   dev_pwm_limit;
+  66          
+  67          uint8 calibration_flag;
+  68          
+  69          // Bit Flag
+  70          
+  71          CYBIT reset_last_value_flag;
+  72          CYBIT tension_valid;
+  73          CYBIT interrupt_flag;
+  74          CYBIT watchdog_flag;
+  75          
+  76          // DMA Buffer
+  77          
+  78          int16 ADC_buf[3]; 
+  79          
+  80          // PWM sign value
+  81          
+  82          int8 pwm_sign[NUM_OF_MOTORS];
+C51 COMPILER V9.51   GLOBALS                                                               03/22/2017 09:03:55 PAGE 3   
 
 ASSEMBLY LISTING OF GENERATED OBJECT CODE
 
