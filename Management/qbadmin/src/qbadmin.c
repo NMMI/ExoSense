@@ -4,6 +4,7 @@
 //=================================================================     includes
 
 #include "../../qbAPI/src/qbmove_communications.h"
+#include "../../qbAPI/src/imuboard_communications.h"
 #include "../../qbAPI/src/exosense_communications.h"
 #include "definitions.h"
 
@@ -53,10 +54,11 @@ static const struct option longOpts[] = {
     { "baudrate", required_argument, NULL, 'B'},
     { "set_watchdog", required_argument, NULL, 'W'},
     { "polling", no_argument, NULL, 'P'},
+	{"get_imu_readings", no_argument, NULL, 'Q'},
     { NULL, no_argument, NULL, 0 }
 };
 
-static const char *optString = "s:adgptvh?f:ljqxzkycbe:uoiW:PB:";
+static const char *optString = "s:adgptvh?f:ljqxzkycbe:uoiW:PB:NMQY:XS";
 
 struct global_args {
     int device_id;
@@ -85,6 +87,8 @@ struct global_args {
     int flag_baudrate;              ///< ./qbmove -B option 
     int flag_get_joystick;          ///< ./handmove -j option
     int flag_ext_drive;             ///< ./handmove -x option
+	
+	int flag_get_imu_readings;		///< Imu board -Q option
 
     short int inputs[NUM_OF_MOTORS];
     short int measurements[6];
@@ -99,7 +103,11 @@ struct global_args {
     short int emg[NUM_OF_EMGS];        ///< Emg sensors values read from the device
     short int joystick[2];             ///< Analog joystick measurements
     short int ext_drive;
-
+	int n_imu;
+	uint8_t* ids;
+	uint8_t* imu_table;
+	uint8_t* mag_cal;
+	
     short int BaudRate;
     int save_baurate;
     short int WDT;
@@ -181,6 +189,7 @@ int main (int argc, char **argv)
     int sensor_num = 0;
 
     char aux_char;
+	char aux_imu[3];
 
     // initializations
 
@@ -209,6 +218,7 @@ int main (int argc, char **argv)
     global_args.flag_get_joystick       = 0;
     global_args.flag_ext_drive          = 0;
     global_args.flag_get_emg            = 0;
+	global_args.flag_get_imu_readings   = 0;
 
     global_args.BaudRate                = baudrate_reader();
 
@@ -313,6 +323,9 @@ int main (int argc, char **argv)
                 global_args.flag_baudrate = 1;
                 global_args.save_baurate = (int) aux[0];
                 break;
+			case 'Q':
+				global_args.flag_get_imu_readings = 1;
+				break;
             case 'h':
             case '?':
             default:
@@ -521,7 +534,7 @@ int main (int argc, char **argv)
         scanf("%c", &aux_char);
         if(aux_char == 'y' || aux_char == 'Y') {
             printf("Entering bootloader mode\n");
-            if(commBootloader(&comm_settings_1, global_args.device_id) >= 0)
+            if(commBootloader(&comm_settings_1, global_args.device_id) > 0)
                 printf("DONE\n");
             else
                 printf("An error occurred.\nRetry.\n");
@@ -987,6 +1000,7 @@ int main (int argc, char **argv)
         commSetZeros(&comm_settings_1, global_args.device_id, 
                     global_args.measurement_offset, sensor_num);
 
+
         //Display current values until CTRL-C is pressed
         gettimeofday(&t_prec, &foo);
         gettimeofday(&t_act, &foo);
@@ -1019,7 +1033,87 @@ int main (int argc, char **argv)
 
     }
 
+	
+	//=========================================================  get imu readings
 
+    if(global_args.flag_get_imu_readings)
+    {
+		uint8_t aux_string[2000];
+		uint8_t PARAM_SLOT_BYTES = 50;
+//		uint8_t NUM_SF_PARAMS = 3;
+		int num_of_params;
+		float* imu_values;
+		
+		commGetParamList(&comm_settings_1, global_args.device_id, 0, NULL, 0, 0, aux_string);
+        
+		num_of_params = aux_string[5];
+		
+		//aux_string[6] <-> packet_data[2] on the firmware
+		global_args.n_imu = aux_string[1*PARAM_SLOT_BYTES + 8];
+		printf("Number of connected IMUs: %d\n", global_args.n_imu);
+		
+		global_args.ids = (uint8_t *) calloc(global_args.n_imu, sizeof(uint8_t));
+		for (int i=0; i< global_args.n_imu; i++){
+			global_args.ids[i] = aux_string[2*PARAM_SLOT_BYTES + 8 + i];
+		}
+		
+		// Retrieve magnetometer calibration parameters
+		global_args.mag_cal = (uint8_t *) calloc(global_args.n_imu, 3*sizeof(uint8_t));
+		for (int i=0; i< global_args.n_imu; i++){
+			global_args.mag_cal[3*i + 0] = aux_string[3*PARAM_SLOT_BYTES + 8 + 3*i];
+			global_args.mag_cal[3*i + 1] = aux_string[3*PARAM_SLOT_BYTES + 9 + 3*i];
+			global_args.mag_cal[3*i + 2] = aux_string[3*PARAM_SLOT_BYTES + 10 + 3*i];
+			printf("MAG PARAM: %d %d %d\n", global_args.mag_cal[3*i + 0], global_args.mag_cal[3*i + 1], global_args.mag_cal[3*i + 2]);
+			
+		}
+		
+		global_args.imu_table = (uint8_t *) calloc(global_args.n_imu, 5*sizeof(uint8_t));
+		for (int i=0; i< global_args.n_imu; i++){
+			global_args.imu_table[5*i + 0] = aux_string[4*PARAM_SLOT_BYTES + 8 + 50*i];
+			global_args.imu_table[5*i + 1] = aux_string[4*PARAM_SLOT_BYTES + 9 + 50*i];
+			global_args.imu_table[5*i + 2] = aux_string[4*PARAM_SLOT_BYTES + 10 + 50*i];
+			global_args.imu_table[5*i + 3] = aux_string[4*PARAM_SLOT_BYTES + 11 + 50*i];
+			global_args.imu_table[5*i + 4] = aux_string[4*PARAM_SLOT_BYTES + 12 + 50*i];
+			printf("ID: %d  - %d, %d, %d, %d, %d\n", global_args.ids[i], global_args.imu_table[5*i + 0], global_args.imu_table[5*i + 1], global_args.imu_table[5*i + 2], global_args.imu_table[5*i + 3], global_args.imu_table[5*i + 4]);
+			
+		}
+		
+		// Imu values is a (3 sensors x 3 axes + 4 + 1) x n_imu values
+		imu_values = (float *) calloc(global_args.n_imu, 3*3*sizeof(float)+4*sizeof(float)+sizeof(float));
+		
+		while(1){
+			
+			commGetImuReadings(&comm_settings_1, global_args.device_id, global_args.imu_table, global_args.mag_cal, global_args.n_imu, imu_values);
+			
+			for (i = 0; i < global_args.n_imu; i++) {
+				
+				printf("IMU: %d\n", global_args.ids[i]);
+			
+				if (global_args.imu_table[5*i + 0]){
+					printf("Accelerometer\n");
+					printf("%f, %f, %f\n", imu_values[(3*3+4+1)*i], imu_values[(3*3+4+1)*i+1], imu_values[(3*3+4+1)*i+2]);
+				}
+				if (global_args.imu_table[5*i + 1]){
+					printf("Gyroscope\n");
+					printf("%f, %f, %f\n", imu_values[(3*3+4+1)*i+3], imu_values[(3*3+4+1)*i+4], imu_values[(3*3+4+1)*i+5]);
+				}
+				if (global_args.imu_table[5*i + 2] ){
+					printf("Magnetometer\n");
+					printf("%f, %f, %f\n", imu_values[(3*3+4+1)*i+6], imu_values[(3*3+4+1)*i+7], imu_values[(3*3+4+1)*i+8]);
+				}
+				if (global_args.imu_table[5*i + 4] ){
+					printf("Temperature\n");
+					printf("%f\n", imu_values[(3*3+4+1)*i+13]);
+				}
+				
+				printf("\n");
+			}
+			
+		}
+		
+	}
+	
+	
 //==========================     closing serial port and closing the application
 
 
@@ -1476,6 +1570,11 @@ void display_usage( void )
     puts(" -x, --ext_drive                  Reads measurements and drives a second board.");
     puts(" -j, --get_joystick               Get joystick measurements.");
     puts("");
+    puts("================================================================================");
+    puts("IMU board exclusive commands");
+    puts("================================================================================");
+	puts(" -Q, --get_imu_readings           Retrieve accelerometers, gyroscopes and magnetometers readings");
+	puts("");
     puts("--------------------------------------------------------------------------------");
     puts("Examples:");
     puts("");
